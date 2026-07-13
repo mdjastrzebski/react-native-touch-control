@@ -1,5 +1,7 @@
 #import "TouchConsumerView.h"
 
+#import "NativeTouchConsumer.h"
+
 #import <React/RCTConversions.h>
 
 #import <react/renderer/components/TouchConsumerViewSpec/ComponentDescriptors.h>
@@ -11,7 +13,7 @@
 using namespace facebook::react;
 
 @implementation TouchConsumerView {
-    UIView * _view;
+    NativeTouchConsumer * _view;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -25,7 +27,10 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const TouchConsumerViewProps>();
     _props = defaultProps;
 
-    _view = [[UIView alloc] init];
+    // The content view is a UIControl so it silently consumes any touch that
+    // lands on it. RCTViewComponentView sizes contentView to the component's
+    // content frame, so the control always spans the whole area.
+    _view = [[NativeTouchConsumer alloc] init];
 
     self.contentView = _view;
   }
