@@ -1,0 +1,1 @@
+export { TouchConsumerView } from './TouchConsumerView';
