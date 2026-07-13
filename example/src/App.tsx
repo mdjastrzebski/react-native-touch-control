@@ -70,12 +70,13 @@ export default function App() {
           >
             {/*
               These nav buttons sit in the top area that iOS 26 treats as the
-              scroll-to-top tap zone. The NativeTouchConsumer is a native UIControl
-              spanning the button, so it claims the touch and keeps the system
-              from triggering scroll-to-top when the button is pressed.
+              scroll-to-top tap zone. The label lives inside the NativeTouchConsumer
+              (a native UIControl), so the control spans the button and claims the
+              touch, keeping the system from triggering scroll-to-top on press.
             */}
-            <Text style={styles.navButtonText}>{label}</Text>
-            <NativeTouchConsumer style={styles.navButtonTouchConsumer} />
+            <NativeTouchConsumer style={styles.navButtonTouchConsumer}>
+              <Text style={styles.navButtonText}>{label}</Text>
+            </NativeTouchConsumer>
           </Pressable>
         ))}
       </View>
@@ -113,11 +114,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1c2e',
   },
   navButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    justifyContent: 'center',
   },
   navButtonTouchConsumer: {
-    ...StyleSheet.absoluteFillObject,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: 'red',
   },
   navButtonPressed: {
     opacity: 0.5,
