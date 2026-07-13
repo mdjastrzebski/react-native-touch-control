@@ -2,20 +2,20 @@ package com.touchconsumer
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
+import com.facebook.react.views.view.ReactViewGroup
 
 /**
- * On Android this is intentionally a plain [View] no-op: there is no use case
- * for consuming touches here, so it simply renders (optionally colored) and
- * lets touch handling behave like any ordinary view. The touch-consuming
+ * On Android this is intentionally a no-op container: there is no use case for
+ * consuming touches here, so it simply renders (optionally colored) its children
+ * and lets touch handling behave like any ordinary view. The touch-consuming
  * behaviour only exists on iOS.
+ *
+ * It extends [ReactViewGroup] (rather than a plain View) so that React can add
+ * child views to it; a non-ViewGroup would crash with "Trying to add a view
+ * that is not a ViewGroup".
  */
-class TouchConsumerView : View {
+class TouchConsumerView : ReactViewGroup {
   constructor(context: Context?) : super(context)
-  constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
-  constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-    context,
-    attrs,
-    defStyleAttr
-  )
+  constructor(context: Context?, attrs: AttributeSet?) : super(context)
+  constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context)
 }

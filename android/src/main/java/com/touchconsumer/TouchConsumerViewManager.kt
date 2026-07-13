@@ -2,15 +2,15 @@ package com.touchconsumer
 
 import android.graphics.Color
 import com.facebook.react.module.annotations.ReactModule
-import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
+import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.ViewManagerDelegate
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.TouchConsumerViewManagerInterface
 import com.facebook.react.viewmanagers.TouchConsumerViewManagerDelegate
 
 @ReactModule(name = TouchConsumerViewManager.NAME)
-class TouchConsumerViewManager : SimpleViewManager<TouchConsumerView>(),
+class TouchConsumerViewManager : ViewGroupManager<TouchConsumerView>(),
   TouchConsumerViewManagerInterface<TouchConsumerView> {
   private val mDelegate: ViewManagerDelegate<TouchConsumerView>
 
