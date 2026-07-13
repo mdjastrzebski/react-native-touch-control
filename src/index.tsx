@@ -1,1 +1,1 @@
-export { TouchConsumerView } from './TouchConsumerView';
+export { NativeTouchConsumer } from './NativeTouchConsumer';
