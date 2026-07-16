@@ -1,4 +1,4 @@
-# react-native-touch-control
+# RN Native Touch Control
 
 A React Native view backed by a real native iOS `UIControl`. Its presence in the view hierarchy makes iOS treat the region as an interactive control, so system behaviors that defer to controls will skip over it.
 
