@@ -4,13 +4,23 @@ A React Native view backed by a real native iOS `UIControl`. Its presence in the
 
 The motivating case is scroll-to-top: on iOS, tapping the status bar scrolls the nearest scroll view to the top. That is great by default, but it fires even when the tap lands on a button you placed in the top bar, which can yank a list back up when the user meant to press the button. Wrapping that button in a `NativeTouchControl` opts the region out of the behavior.
 
+### Why this matters on iOS 26
+
+Historically the scroll-to-top tap target was just the status bar, a thin strip that rarely overlapped interactive UI. iOS 26 extended this target well beyond the status bar: it now covers a large part of the typical navigation bar area, where apps commonly place back buttons, titles, and other controls.
+
+<p align="center">
+  <img src="./docs/scroll-to-top-area@2x.png" alt="On iOS 26 the scroll-to-top tap area extends beyond the status bar to cover much of the navigation bar" width="360" />
+</p>
+
+As a result, taps meant for your nav-bar controls now frequently land inside the scroll-to-top zone and trigger an unwanted scroll. `NativeTouchControl` gives you a way to reclaim those regions.
+
 > [!NOTE]
 > This is an **iOS-only** behavior. On Android the component is a plain passthrough container (see [Platform support](#platform-support)).
 
 ## Demo
 
 <p align="center">
-  <img src="./docs/NativeTouchControlExample.gif" alt="Pressing a nav-bar button wrapped in NativeTouchControl no longer triggers scroll-to-top" width="300" />
+  <img src="./docs/native-touch-control-example.gif" alt="Pressing a nav-bar button wrapped in NativeTouchControl no longer triggers scroll-to-top" width="300" />
 </p>
 
 The nav-bar buttons sit in the status-bar tap zone. Because their labels are wrapped in `NativeTouchControl`, pressing them no longer scrolls the list to the top. A runnable version lives in [`example/`](./example).
@@ -55,6 +65,10 @@ function TopBarButton({ label, onPress }) {
 `NativeTouchControl` accepts all standard `View` props, so you can lay it out and style it like any other view. Children render inside it.
 
 ## How it works
+
+React Native and native iOS run two independent touch dispatch systems. RN's responder system handles touches for `Pressable`, `Touchable*`, and gesture handlers in JavaScript, while UIKit dispatches touches to native views in parallel. The two do not coordinate: UIKit has no knowledge of your RN `Pressable`s or `Touchable`s, so a JS component handling a press does nothing to stop UIKit from also acting on the same tap. That is why an ordinary `Pressable` in the nav bar still triggers scroll-to-top — from UIKit's point of view there was no native control there, only a tap in the scroll-to-top zone.
+
+`NativeTouchControl` bridges that gap by putting a real native control into the UIKit hierarchy, which is something UIKit's own heuristics can see.
 
 iOS's scroll-to-top logic does not blindly scroll on a status-bar tap. Before scrolling, UIKit walks the view hierarchy under the touch and checks whether an interactive `UIControl` is there. If it finds one, it assumes the tap belongs to that control and leaves the scroll view alone.
 
