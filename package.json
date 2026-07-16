@@ -1,6 +1,6 @@
 {
   "name": "react-native-touch-control",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Prevent iOS scroll-to-top on tappable areas in React Native",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
