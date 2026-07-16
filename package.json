@@ -1,7 +1,7 @@
 {
   "name": "react-native-touch-control",
   "version": "0.1.0",
-  "description": "React Native view backed by a native iOS UIControl",
+  "description": "Prevent iOS scroll-to-top on tappable areas in React Native",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
@@ -43,7 +43,12 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "scroll-to-top",
+    "scrollview",
+    "status-bar",
+    "uicontrol",
+    "touch"
   ],
   "repository": {
     "type": "git",

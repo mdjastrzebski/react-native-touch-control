@@ -87,7 +87,7 @@ export default function App() {
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <NativeTouchControl color={item.color} style={styles.swatch} />
+            <View style={[styles.swatch, { backgroundColor: item.color }]} />
             <Text style={styles.rowText}>{item.name}</Text>
           </View>
         )}
@@ -119,7 +119,8 @@ const styles = StyleSheet.create({
   navButtonTouchControl: {
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: 'red',
+    backgroundColor: '#48484a',
+    borderRadius: 8,
   },
   navButtonPressed: {
     opacity: 0.5,
