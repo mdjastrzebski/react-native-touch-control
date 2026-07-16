@@ -83,9 +83,9 @@ A couple of implementation details worth knowing:
 
 ## Platform support
 
-| Platform | Behavior                                                                                     |
-| -------- | -------------------------------------------------------------------------------------------- |
-| iOS      | Renders a native `UIControl` region; opts the area out of `UIControl`-deferring system behaviors such as scroll-to-top. |
+| Platform | Behavior                                                                                                                                 |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| iOS      | Renders a native `UIControl` region; opts the area out of `UIControl`-deferring system behaviors such as scroll-to-top.                  |
 | Android  | No-op passthrough. It renders its children and behaves like an ordinary view. There is no equivalent scroll-to-top behavior to suppress. |
 
 Writing the component once and letting it be a no-op on Android means you can use it in cross-platform code without branching.

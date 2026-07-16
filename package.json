@@ -34,9 +34,14 @@
   "scripts": {
     "example": "yarn workspace react-native-touch-control-example",
     "clean": "del-cli lib",
-    "prepare": "bob build",
+    "build": "bob build",
     "typecheck": "tsc",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "lint:fix": "eslint \"**/*.{js,ts,tsx}\" --fix",
+    "format": "prettier --write \"**/*.{js,ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,ts,tsx,json,md}\"",
+    "validate": "yarn format:check && yarn lint && yarn typecheck && yarn build",
+    "validate:fix": "yarn format && yarn lint:fix && yarn typecheck && yarn build",
     "test": "jest",
     "release": "release-it --only-version"
   },
