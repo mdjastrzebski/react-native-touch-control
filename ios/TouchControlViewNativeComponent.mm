@@ -1,8 +1,4 @@
-#import "TouchControlView.h"
-
-#import "NativeTouchControl.h"
-
-#import <React/RCTConversions.h>
+#import "TouchControlViewNativeComponent.h"
 
 #import <react/renderer/components/TouchControlViewSpec/ComponentDescriptors.h>
 #import <react/renderer/components/TouchControlViewSpec/Props.h>
@@ -13,7 +9,7 @@
 using namespace facebook::react;
 
 @implementation TouchControlView {
-    NativeTouchControl * _view;
+    UIControl * _view;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
@@ -27,33 +23,28 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const TouchControlViewProps>();
     _props = defaultProps;
 
-    // The content view is a UIControl so it silently consumes any touch that
-    // lands on it. It is kept sized to the full bounds (see updateLayoutMetrics:)
-    // so the control always spans the whole area, padding included.
+    // The content view is a passive UIControl marker. It defines no
+    // target/action and does nothing on its own; its mere presence in the UIKit
+    // hierarchy is enough for system heuristics that defer to a UIControl (such
+    // as scroll-to-top) to detect a control here and back off. It does not
+    // interfere with React Native's own touch dispatch. It is kept sized to the
+    // full bounds (see updateLayoutMetrics:) so the marker always spans the
+    // whole area, padding included.
+    //
+    // A bare UIControl is enough — the heuristic only checks for a UIControl in
+    // the hierarchy, so no subclass or custom behavior is needed.
     //
     // React children are mounted (by RCTViewComponentView) as siblings *beneath*
     // this contentView, since it is added first and stays topmost in the subview
-    // stack. The control therefore overlays and consumes touches across the whole
-    // area, while transparent regions let the children show through — the same
-    // effect as an absolute-fill overlay, but with the children hosted here.
-    _view = [[NativeTouchControl alloc] init];
+    // stack. The control therefore overlays the whole area while transparent
+    // regions let the children show through — the same effect as an
+    // absolute-fill overlay, but with the children hosted here.
+    _view = [[UIControl alloc] init];
 
     self.contentView = _view;
   }
 
   return self;
-}
-
-- (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
-{
-    const auto &oldViewProps = *std::static_pointer_cast<TouchControlViewProps const>(_props);
-    const auto &newViewProps = *std::static_pointer_cast<TouchControlViewProps const>(props);
-
-    if (oldViewProps.color != newViewProps.color) {
-        [_view setBackgroundColor: RCTUIColorFromSharedColor(newViewProps.color)];
-    }
-
-    [super updateProps:props oldProps:oldProps];
 }
 
 - (void)updateLayoutMetrics:(const LayoutMetrics &)layoutMetrics
@@ -63,9 +54,10 @@ using namespace facebook::react;
 
     // RCTViewComponentView sizes contentView to the *content* frame, which is
     // inset by border + padding. That would leave an uncovered ring around the
-    // edges where touches slip past the control to the system (e.g. triggering
-    // scroll-to-top). Stretch the control over the full bounds so it consumes
-    // every touch in the view, padding included.
+    // edges where the marker is absent, so a tap there could still reach the
+    // system behavior (e.g. triggering scroll-to-top). Stretch the control over
+    // the full bounds so the marker covers every point in the view, padding
+    // included.
     _view.frame = self.bounds;
 }
 

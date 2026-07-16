@@ -1,9 +1,5 @@
-import { View, type ColorValue, type ViewProps } from 'react-native';
+import { View, type ViewProps } from 'react-native';
 
-type Props = ViewProps & {
-  color?: ColorValue;
-};
-
-export function NativeTouchControl({ color, style, ...rest }: Props) {
-  return <View {...rest} style={[style, { backgroundColor: color }]} />;
+export function NativeTouchControl(props: ViewProps) {
+  return <View {...props} />;
 }
