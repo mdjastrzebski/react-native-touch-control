@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,6 +24,9 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
+
+      - name: Check formatting
+        run: yarn format:check
 
       - name: Lint files
         run: yarn lint
@@ -55,7 +58,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Build package
-        run: yarn prepare
+        run: yarn build
 
   build-android:
     runs-on: ubuntu-latest
