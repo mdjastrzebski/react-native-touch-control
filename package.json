@@ -114,7 +114,7 @@
     ]
   },
   "codegenConfig": {
-    "name": "TouchControlViewSpec",
+    "name": "TouchControlSpec",
     "type": "all",
     "jsSrcsDir": "src",
     "android": {
@@ -122,8 +122,8 @@
     },
     "ios": {
       "components": {
-        "TouchControlView": {
-          "className": "TouchControlView"
+        "TouchControl": {
+          "className": "TouchControl"
         }
       }
     }

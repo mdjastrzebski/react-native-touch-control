@@ -1,2 +1,2 @@
-export { default as NativeTouchControl } from './TouchControlViewNativeComponent';
-export * from './TouchControlViewNativeComponent';
+export { default as NativeTouchControl } from './TouchControlNativeComponent';
+export * from './TouchControlNativeComponent';

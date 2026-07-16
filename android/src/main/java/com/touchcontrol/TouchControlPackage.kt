@@ -6,9 +6,9 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.uimanager.ViewManager
 
-class TouchControlViewPackage : BaseReactPackage() {
+class TouchControlPackage : BaseReactPackage() {
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-    return listOf(TouchControlViewManager())
+    return listOf(TouchControlManager())
   }
 
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? = null

@@ -1,26 +1,26 @@
-#import "TouchControlViewNativeComponent.h"
+#import "TouchControlNativeComponent.h"
 
-#import <react/renderer/components/TouchControlViewSpec/ComponentDescriptors.h>
-#import <react/renderer/components/TouchControlViewSpec/Props.h>
-#import <react/renderer/components/TouchControlViewSpec/RCTComponentViewHelpers.h>
+#import <react/renderer/components/TouchControlSpec/ComponentDescriptors.h>
+#import <react/renderer/components/TouchControlSpec/Props.h>
+#import <react/renderer/components/TouchControlSpec/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
-@implementation TouchControlView {
+@implementation TouchControl {
     UIControl * _view;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
-    return concreteComponentDescriptorProvider<TouchControlViewComponentDescriptor>();
+    return concreteComponentDescriptorProvider<TouchControlComponentDescriptor>();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const TouchControlViewProps>();
+    static const auto defaultProps = std::make_shared<const TouchControlProps>();
     _props = defaultProps;
 
     // The content view is a passive UIControl marker. It defines no
