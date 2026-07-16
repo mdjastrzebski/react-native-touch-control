@@ -1,30 +1,30 @@
-#import "TouchConsumerView.h"
+#import "TouchControlView.h"
 
-#import "NativeTouchConsumer.h"
+#import "NativeTouchControl.h"
 
 #import <React/RCTConversions.h>
 
-#import <react/renderer/components/TouchConsumerViewSpec/ComponentDescriptors.h>
-#import <react/renderer/components/TouchConsumerViewSpec/Props.h>
-#import <react/renderer/components/TouchConsumerViewSpec/RCTComponentViewHelpers.h>
+#import <react/renderer/components/TouchControlViewSpec/ComponentDescriptors.h>
+#import <react/renderer/components/TouchControlViewSpec/Props.h>
+#import <react/renderer/components/TouchControlViewSpec/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
 
 using namespace facebook::react;
 
-@implementation TouchConsumerView {
-    NativeTouchConsumer * _view;
+@implementation TouchControlView {
+    NativeTouchControl * _view;
 }
 
 + (ComponentDescriptorProvider)componentDescriptorProvider
 {
-    return concreteComponentDescriptorProvider<TouchConsumerViewComponentDescriptor>();
+    return concreteComponentDescriptorProvider<TouchControlViewComponentDescriptor>();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const TouchConsumerViewProps>();
+    static const auto defaultProps = std::make_shared<const TouchControlViewProps>();
     _props = defaultProps;
 
     // The content view is a UIControl so it silently consumes any touch that
@@ -36,7 +36,7 @@ using namespace facebook::react;
     // stack. The control therefore overlays and consumes touches across the whole
     // area, while transparent regions let the children show through — the same
     // effect as an absolute-fill overlay, but with the children hosted here.
-    _view = [[NativeTouchConsumer alloc] init];
+    _view = [[NativeTouchControl alloc] init];
 
     self.contentView = _view;
   }
@@ -46,8 +46,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(Props::Shared const &)props oldProps:(Props::Shared const &)oldProps
 {
-    const auto &oldViewProps = *std::static_pointer_cast<TouchConsumerViewProps const>(_props);
-    const auto &newViewProps = *std::static_pointer_cast<TouchConsumerViewProps const>(props);
+    const auto &oldViewProps = *std::static_pointer_cast<TouchControlViewProps const>(_props);
+    const auto &newViewProps = *std::static_pointer_cast<TouchControlViewProps const>(props);
 
     if (oldViewProps.color != newViewProps.color) {
         [_view setBackgroundColor: RCTUIColorFromSharedColor(newViewProps.color)];

@@ -1,12 +1,12 @@
-# react-native-touch-consumer
+# react-native-touch-control
 
-React Native component consuming native touches
+React Native view backed by a native iOS UIControl
 
 ## Installation
 
 
 ```sh
-npm install react-native-touch-consumer
+npm install react-native-touch-control
 ```
 
 
@@ -14,11 +14,11 @@ npm install react-native-touch-consumer
 
 
 ```js
-import { TouchConsumerView } from "react-native-touch-consumer";
+import { NativeTouchControl } from "react-native-touch-control";
 
 // ...
 
-<TouchConsumerView color="tomato" />
+<NativeTouchControl color="tomato" />
 ```
 
 

@@ -1,4 +1,4 @@
-package com.touchconsumer
+package com.touchcontrol
 
 import android.content.Context
 import android.util.AttributeSet
@@ -14,7 +14,7 @@ import com.facebook.react.views.view.ReactViewGroup
  * child views to it; a non-ViewGroup would crash with "Trying to add a view
  * that is not a ViewGroup".
  */
-class TouchConsumerView : ReactViewGroup {
+class TouchControlView : ReactViewGroup {
   constructor(context: Context?) : super(context)
   constructor(context: Context?, attrs: AttributeSet?) : super(context)
   constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context)

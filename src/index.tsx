@@ -1,1 +1,1 @@
-export { NativeTouchConsumer } from './NativeTouchConsumer';
+export { NativeTouchControl } from './NativeTouchControl';

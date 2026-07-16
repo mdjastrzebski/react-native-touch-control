@@ -4,6 +4,6 @@ type Props = ViewProps & {
   color?: ColorValue;
 };
 
-export function NativeTouchConsumer({ color, style, ...rest }: Props) {
+export function NativeTouchControl({ color, style, ...rest }: Props) {
   return <View {...rest} style={[style, { backgroundColor: color }]} />;
 }

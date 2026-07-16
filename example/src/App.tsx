@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { NativeTouchConsumer } from 'react-native-touch-consumer';
+import { NativeTouchControl } from 'react-native-touch-control';
 
 const COLOR_DATA = [
   { color: '#ff3b30', name: 'Red' },
@@ -70,13 +70,13 @@ export default function App() {
           >
             {/*
               These nav buttons sit in the top area that iOS 26 treats as the
-              scroll-to-top tap zone. The label lives inside the NativeTouchConsumer
+              scroll-to-top tap zone. The label lives inside the NativeTouchControl
               (a native UIControl), so the control spans the button and claims the
               touch, keeping the system from triggering scroll-to-top on press.
             */}
-            <NativeTouchConsumer style={styles.navButtonTouchConsumer}>
+            <NativeTouchControl style={styles.navButtonTouchControl}>
               <Text style={styles.navButtonText}>{label}</Text>
-            </NativeTouchConsumer>
+            </NativeTouchControl>
           </Pressable>
         ))}
       </View>
@@ -87,7 +87,7 @@ export default function App() {
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
           <View style={styles.row}>
-            <NativeTouchConsumer color={item.color} style={styles.swatch} />
+            <NativeTouchControl color={item.color} style={styles.swatch} />
             <Text style={styles.rowText}>{item.name}</Text>
           </View>
         )}
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   navButton: {
     justifyContent: 'center',
   },
-  navButtonTouchConsumer: {
+  navButtonTouchControl: {
     paddingVertical: 10,
     paddingHorizontal: 16,
     backgroundColor: 'red',

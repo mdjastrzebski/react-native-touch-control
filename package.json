@@ -1,12 +1,12 @@
 {
-  "name": "react-native-touch-consumer",
+  "name": "react-native-touch-control",
   "version": "0.1.0",
-  "description": "React Native component consuming native touches",
+  "description": "React Native view backed by a native iOS UIControl",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
   "exports": {
     ".": {
-      "react-native-touch-consumer-source": "./src/index.tsx",
+      "react-native-touch-control-source": "./src/index.tsx",
       "types": "./lib/typescript/src/index.d.ts",
       "default": "./lib/module/index.js"
     },
@@ -32,7 +32,7 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace react-native-touch-consumer-example",
+    "example": "yarn workspace react-native-touch-control-example",
     "clean": "del-cli lib",
     "prepare": "bob build",
     "typecheck": "tsc",
@@ -47,14 +47,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mdjastrzebski/react-native-touch-consumer.git"
+    "url": "git+https://github.com/mdjastrzebski/react-native-touch-control.git"
   },
   "author": "Maciej Jastrzębski <mdjastrzebski@gmail.com> (https://github.com/mdjastrzebski)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mdjastrzebski/react-native-touch-consumer/issues"
+    "url": "https://github.com/mdjastrzebski/react-native-touch-control/issues"
   },
-  "homepage": "https://github.com/mdjastrzebski/react-native-touch-consumer#readme",
+  "homepage": "https://github.com/mdjastrzebski/react-native-touch-control#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -109,16 +109,16 @@
     ]
   },
   "codegenConfig": {
-    "name": "TouchConsumerViewSpec",
+    "name": "TouchControlViewSpec",
     "type": "all",
     "jsSrcsDir": "src",
     "android": {
-      "javaPackageName": "com.touchconsumer"
+      "javaPackageName": "com.touchcontrol"
     },
     "ios": {
       "components": {
-        "TouchConsumerView": {
-          "className": "TouchConsumerView"
+        "TouchControlView": {
+          "className": "TouchControlView"
         }
       }
     }

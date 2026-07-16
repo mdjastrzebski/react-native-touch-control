@@ -8,4 +8,4 @@ interface NativeProps extends ViewProps {
   color?: ColorValue;
 }
 
-export default codegenNativeComponent<NativeProps>('TouchConsumerView');
+export default codegenNativeComponent<NativeProps>('TouchControlView');

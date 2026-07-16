@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "TouchConsumer Example",
-    "slug": "react-native-touch-consumer-example",
+    "name": "TouchControl Example",
+    "slug": "react-native-touch-control-example",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,7 +13,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "touchconsumer.example"
+      "bundleIdentifier": "touchcontrol.example"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +22,7 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "touchconsumer.example"
+      "package": "touchcontrol.example"
     },
     "web": {
       "favicon": "./assets/favicon.png"

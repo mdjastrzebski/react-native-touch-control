@@ -2,12 +2,12 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-touch-consumer": ["./src/index"]
+      "react-native-touch-control": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "customConditions": [
-      "react-native-touch-consumer-source",
+      "react-native-touch-control-source",
       "react-native-strict-api"
     ],
     "esModuleInterop": true,
