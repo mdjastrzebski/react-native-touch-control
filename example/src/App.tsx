@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   FlatList,
+  Platform,
   Pressable,
   SafeAreaView,
   StyleSheet,
@@ -60,15 +61,13 @@ export default function App() {
     <SafeAreaView style={styles.container}>
       <View style={styles.navBar}>
         {NAV_BUTTONS.map((label) => {
-          // These nav buttons sit in the top area that iOS 26 treats as the
-          // scroll-to-top tap zone. NativeTouchControl (a native UIControl)
-          // claims the touch so pressing them does not scroll the list to top.
+          // These nav buttons sit in the iOS 26+ scroll-to-top tap zone.
+          // NativeTouchControl puts a UIControl on top, so pressing them does
+          // not scroll the list to top.
           if (label === 'Right') {
-            // Overlay-sibling usage (see README): NativeTouchControl is not a
-            // wrapper here. It absolutely fills the whole Pressable — including
-            // the Pressable's padding — so the entire button opts out of
-            // scroll-to-top, even the parts the label does not cover. It comes
-            // after the label so it stays the topmost view.
+            // Overlay-sibling form (see README): an absolute-fill sibling,
+            // placed last so it stays topmost. Covers the Pressable's padding
+            // too. No children, so render it only on iOS.
             return (
               <Pressable
                 key={label}
@@ -80,13 +79,15 @@ export default function App() {
                 onPress={() => setMessage(`${label} button pressed`)}
               >
                 <Text style={styles.navButtonText}>{label}</Text>
-                <NativeTouchControl style={StyleSheet.absoluteFill} />
+                {Platform.OS === 'ios' && (
+                  <NativeTouchControl style={StyleSheet.absoluteFill} />
+                )}
               </Pressable>
             );
           }
 
-          // Wrapper usage: the label lives inside the NativeTouchControl, which
-          // spans the button.
+          // Wrapper form: the label renders inside the NativeTouchControl,
+          // which spans the button.
           return (
             <Pressable
               key={label}

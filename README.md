@@ -1,18 +1,18 @@
 # RN Native Touch Control
 
-A React Native view backed by a real native iOS `UIControl`. Its presence in the view hierarchy makes iOS treat the region as an interactive control, so system behaviors that defer to controls will skip over it.
+A React Native view backed by a real native iOS `UIControl`. Its presence in the view hierarchy makes iOS treat the region as an interactive control, so system behaviors that defer to controls skip over it.
 
-The motivating case is scroll-to-top: on iOS, tapping the status bar scrolls the nearest scroll view to the top. That is great by default, but it fires even when the tap lands on a button you placed in the top bar, which can yank a list back up when the user meant to press the button. Wrapping that button in a `NativeTouchControl` opts the region out of the behavior.
+The primary use case is scroll-to-top. On iOS, tapping the status bar scrolls the nearest scroll view to the top. It also fires when the tap lands on a button in the top bar, so the button press and the scroll happen at once. On iPad it can be worse: if the button navigates back, the scroll hits the previous screen's scroll view instead of the current one. Hosting the button in a `NativeTouchControl` opts the region out.
 
-### Why this matters on iOS 26
+### iOS 26+
 
-Historically the scroll-to-top tap target was just the status bar, a thin strip that rarely overlapped interactive UI. iOS 26 extended this target well beyond the status bar: it now covers a large part of the typical navigation bar area, where apps commonly place back buttons, titles, and other controls.
+The scroll-to-top tap target used to be the status bar only, a thin strip that rarely overlapped interactive UI. iOS 26 extended it over much of the navigation bar, where apps commonly place back buttons, titles, and other controls.
 
 <p align="center">
-  <img src="./docs/scroll-to-top-area@2x.png" alt="On iOS 26 the scroll-to-top tap area extends beyond the status bar to cover much of the navigation bar" width="360" />
+  <img src="./docs/scroll-to-top-area@2x.png" alt="On iOS 26 and later the scroll-to-top tap area extends beyond the status bar to cover much of the navigation bar" width="360" />
 </p>
 
-As a result, taps meant for your nav-bar controls now frequently land inside the scroll-to-top zone and trigger an unwanted scroll. `NativeTouchControl` gives you a way to reclaim those regions.
+Taps meant for nav-bar controls now often land inside the scroll-to-top zone and trigger an unwanted scroll. `NativeTouchControl` opts those regions out.
 
 > [!NOTE]
 > This is an **iOS-only** behavior. On Android the component is a plain passthrough container (see [Platform support](#platform-support)).
@@ -23,7 +23,7 @@ As a result, taps meant for your nav-bar controls now frequently land inside the
   <img src="./docs/native-touch-control-example.gif" alt="Pressing a nav-bar button wrapped in NativeTouchControl no longer triggers scroll-to-top" width="300" />
 </p>
 
-The nav-bar buttons sit in the status-bar tap zone. Because their labels are wrapped in `NativeTouchControl`, pressing them no longer scrolls the list to the top. A runnable version lives in [`example/`](./example).
+The nav-bar buttons sit in the status-bar tap zone. Each hosts a `NativeTouchControl` on top of its content, so pressing them does not scroll the list to the top. The example uses both the wrapper and the overlay-sibling forms. A runnable version lives in [`example/`](./example).
 
 ## Installation
 
@@ -41,7 +41,11 @@ This library uses the New Architecture (Fabric). No extra linking steps are requ
 
 ## Usage
 
-Wrap whatever should sit in an "opt-out" region:
+`NativeTouchControl` accepts all standard `View` props and lays out like any other view. There are two equally valid ways to use it. Both place the native `UIControl` **on top of your content**, which is the condition iOS's scroll-to-top detection checks (see [How it works](#how-it-works)).
+
+### Use case 1: as a wrapper
+
+Nest content inside `NativeTouchControl`. The control spans the region, and its children render beneath it:
 
 ```tsx
 import { NativeTouchControl } from 'react-native-touch-control';
@@ -49,11 +53,7 @@ import { NativeTouchControl } from 'react-native-touch-control';
 function TopBarButton({ label, onPress }) {
   return (
     <Pressable onPress={onPress}>
-      {/*
-        This button lives in the status-bar tap zone. Hosting its content
-        inside NativeTouchControl makes iOS see a UIControl here and skip
-        scroll-to-top, so pressing the button no longer scrolls the list up.
-      */}
+      {/* UIControl on top of the label, so iOS skips scroll-to-top here. */}
       <NativeTouchControl>
         <Text>{label}</Text>
       </NativeTouchControl>
@@ -62,11 +62,29 @@ function TopBarButton({ label, onPress }) {
 }
 ```
 
-`NativeTouchControl` accepts all standard `View` props, so you can lay it out and style it like any other view. Children render inside it.
+Use this form when the control should cover exactly the content.
 
-### `NativeTouchControl` must live _inside_ your `Pressable`
+### Use case 2: as an overlay sibling
 
-iOS suppresses scroll-to-top only when the tapped view is the native `UIControl`, and React Native routes that tap **up** the tree to the responder. So the `Pressable`/`Touchable` must be an **ancestor** of `NativeTouchControl` — nest the control inside it, never around it. A `Pressable` placed inside `NativeTouchControl` never fires `onPress`.
+Render `NativeTouchControl` as a `StyleSheet.absoluteFill` **sibling** of the content, placed **last** so it stays topmost. This covers the whole parent, including any padding a wrapper would leave exposed. It has no children, so render it only on iOS:
+
+```tsx
+import { Platform, StyleSheet } from 'react-native';
+
+<Pressable style={styles.button} onPress={onPress}>
+  <Text style={styles.label}>{label}</Text>
+  {/* Fills the whole Pressable, padding included. */}
+  {Platform.OS === 'ios' && (
+    <NativeTouchControl style={StyleSheet.absoluteFill} />
+  )}
+</Pressable>;
+```
+
+Use this form when the tappable area is larger than the content itself (padding, hit slop, a whole card).
+
+### `NativeTouchControl` must be _inside_ the `Pressable`
+
+In both use cases, the `Pressable`/`Touchable` must be an **ancestor** of `NativeTouchControl`. Nest the control inside it, not around it. React Native routes the tap **up** the tree to the responder, so a `Pressable` inside `NativeTouchControl` never fires `onPress`.
 
 ```tsx
 // ✅ Works — Pressable is an ancestor of NativeTouchControl
@@ -84,43 +102,29 @@ iOS suppresses scroll-to-top only when the tapped view is the native `UIControl`
 </NativeTouchControl>
 ```
 
-### Covering padding: use it as an overlay sibling
-
-If your `Pressable` adds padding _around_ the control, taps on that padding still slip through to scroll-to-top. To cover the whole pressable, render `NativeTouchControl` as a `StyleSheet.absoluteFill` **sibling** of your content instead of a wrapper — placed **last** so it stays the topmost view:
-
-```tsx
-<Pressable style={styles.button} onPress={onPress}>
-  <Text style={styles.label}>{label}</Text>
-  {/* Overlay, not wrapper: fills the whole Pressable, padding included. */}
-  <NativeTouchControl style={StyleSheet.absoluteFill} />
-</Pressable>
-```
-
 ## How it works
 
-React Native and native iOS run two independent touch dispatch systems. RN's responder system handles touches for `Pressable`, `Touchable*`, and gesture handlers in JavaScript, while UIKit dispatches touches to native views in parallel. The two do not coordinate: UIKit has no knowledge of your RN `Pressable`s or `Touchable`s, so a JS component handling a press does nothing to stop UIKit from also acting on the same tap. That is why an ordinary `Pressable` in the nav bar still triggers scroll-to-top — from UIKit's point of view there was no native control there, only a tap in the scroll-to-top zone.
+React Native and iOS run two independent touch systems. RN's responder system handles `Pressable`, `Touchable*`, and gesture handlers in JavaScript, while UIKit dispatches touches to native views in parallel. The two do not coordinate, so handling a press in JS does not stop UIKit from also acting on the same tap. That is why an ordinary `Pressable` in the nav bar still triggers scroll-to-top: to UIKit there is no native control there, only a tap in the scroll-to-top zone.
 
-`NativeTouchControl` bridges that gap by putting a real native control into the UIKit hierarchy, which is something UIKit's own heuristics can see.
+On iOS, scroll-to-top is driven by a private gesture recognizer, `_UIDoubleTapInteractionGestureRecognizer`, that watches the status-bar region. Before scrolling, it hit-tests the touch and checks whether the topmost view there is an interactive `UIControl`. If it is, the recognizer assumes the tap belongs to that control and does not scroll.
 
-iOS's scroll-to-top logic does not blindly scroll on a status-bar tap. Before scrolling, UIKit walks the view hierarchy under the touch and checks whether an interactive `UIControl` is there. If it finds one, it assumes the tap belongs to that control and leaves the scroll view alone.
+`NativeTouchControl` relies on this check. The native view is a plain `UIControl` with no target/action, a passive marker whose presence as the topmost view is enough for the recognizer to skip scroll-to-top.
 
-`NativeTouchControl` exploits that check. The native view is a `UIControl` subclass that does nothing on its own — it defines no target/action and consumes no events. It is a **passive marker**: its mere presence in the hierarchy is enough for iOS's heuristic to detect a control and back off.
+The two use cases are equivalent because both put the `UIControl` **on top of the content** at the tapped point: beneath the content in the wrapper form, in front of it in the overlay form. Either way the hit-test resolves to the `UIControl`. Since this is a general UIKit hit-test and not a scroll-to-top-specific hook, the same approach opts a region out of other system behaviors that defer to `UIControl`s.
 
-Because this is a general UIKit heuristic rather than a scroll-to-top-specific hook, the same trick can shield a region from other system behaviors that defer to `UIControl`s, not just scroll-to-top.
+Two implementation details:
 
-A couple of implementation details worth knowing:
-
-- The control is stretched to the view's **full bounds**, padding included, so there is no uncovered ring around the edges where a tap could slip past it to the system.
-- React children are mounted underneath the control, so transparent regions show your content through while the control still overlays the whole area.
+- The control is stretched to the view's **full bounds**, padding included, so no uncovered edge is left where a tap could reach the system behavior.
+- React children mount beneath the control, so transparent regions show the content through while the control overlays the whole area.
 
 ## Platform support
 
-| Platform | Behavior                                                                                                                                 |
-| -------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| iOS      | Renders a native `UIControl` region; opts the area out of `UIControl`-deferring system behaviors such as scroll-to-top.                  |
-| Android  | No-op passthrough. It renders its children and behaves like an ordinary view. There is no equivalent scroll-to-top behavior to suppress. |
+| Platform | Behavior                                                                                                                    |
+| -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| iOS      | Renders a native `UIControl` region that opts the area out of `UIControl`-deferring system behaviors such as scroll-to-top. |
+| Android  | No-op passthrough. Renders its children like an ordinary view. There is no equivalent scroll-to-top behavior to suppress.   |
 
-Writing the component once and letting it be a no-op on Android means you can use it in cross-platform code without branching.
+Because it is a no-op on Android, the component can be used in cross-platform code without branching.
 
 ## Contributing
 

@@ -1,14 +1,14 @@
 # react-native-touch-control
 
-> A React Native (New Architecture / Fabric) view backed by a real native iOS `UIControl`. Its mere presence in the view hierarchy makes iOS treat the region as an interactive control, so system behaviors that defer to controls skip over it. The motivating case is scroll-to-top: on iOS 26 the status-bar tap zone expanded to cover much of the navigation bar, so taps meant for nav-bar buttons trigger an unwanted scroll-to-top; wrapping those buttons in `NativeTouchControl` opts the region out.
+> A React Native (New Architecture / Fabric) view backed by a real native iOS `UIControl`. Its mere presence in the view hierarchy makes iOS treat the region as an interactive control, so system behaviors that defer to controls skip over it. The primary use case is scroll-to-top: on iOS 26+ (including the iOS 27 betas) the status-bar tap zone expanded to cover much of the navigation bar, so taps meant for nav-bar buttons trigger an unwanted scroll-to-top; wrapping those buttons in `NativeTouchControl` opts the region out.
 
 Key facts for using the library correctly:
 
 - **iOS-only behavior.** On Android `NativeTouchControl` is a no-op passthrough that just renders its children, so it is safe to use in cross-platform code without branching.
 - **The component takes all standard `View` props** (`NativeTouchControl(props: ViewProps)`); children render inside it. The native component is codegen'd as `TouchControl`.
 - **Placement rule:** the `Pressable`/`Touchable` must be an **ancestor** of `NativeTouchControl` (nest the control *inside* the pressable, never around it). iOS suppresses scroll-to-top only when the tapped view resolves to the `UIControl`, and React Native then routes the tap *up* the tree to the responder — so a `Pressable` nested *inside* `NativeTouchControl` never fires `onPress`.
-- **Covering padding:** if a `Pressable` adds padding around the control, taps on the padding still leak through. Render `NativeTouchControl` as a `StyleSheet.absoluteFill` sibling of the content (placed **last**, so it stays the topmost view) instead of as a wrapper.
-- **How it works:** the native view is a passive `UIControl` marker with no target/action. It is stretched to the view's full bounds (padding included) and stays topmost, so it is the hit-test leaf iOS's heuristic checks. React children mount beneath it and show through its transparent regions.
+- **Two equally valid use cases:** (1) **wrapper** — nest content inside `NativeTouchControl`, children render beneath the control; (2) **overlay sibling** — render `NativeTouchControl` as a `StyleSheet.absoluteFill` sibling placed **last** (topmost), which also covers the parent's padding a wrapper would leave exposed; because it has no children, gate it on `Platform.OS === 'ios'`. Both do the same thing: they put the `UIControl` **on top of your content** at the tapped point, which is the exact condition iOS checks.
+- **How it works:** on iOS, scroll-to-top is driven by the private `_UIDoubleTapInteractionGestureRecognizer`, which hit-tests the touch and checks whether the topmost view there is an interactive `UIControl`; if so, it defers and does not scroll. The native view is a passive `UIControl` marker with no target/action, stretched to the view's full bounds (padding included) and kept topmost, so it is the hit-test result the recognizer inspects. React children mount beneath it and show through its transparent regions.
 
 ## Docs
 
