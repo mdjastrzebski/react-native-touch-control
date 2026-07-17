@@ -59,26 +59,49 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.navBar}>
-        {NAV_BUTTONS.map((label) => (
-          <Pressable
-            key={label}
-            style={({ pressed }) => [
-              styles.navButton,
-              pressed && styles.navButtonPressed,
-            ]}
-            onPress={() => setMessage(`${label} button pressed`)}
-          >
-            {/*
-              These nav buttons sit in the top area that iOS 26 treats as the
-              scroll-to-top tap zone. The label lives inside the NativeTouchControl
-              (a native UIControl), so the control spans the button and claims the
-              touch, keeping the system from triggering scroll-to-top on press.
-            */}
-            <NativeTouchControl style={styles.navButtonTouchControl}>
-              <Text style={styles.navButtonText}>{label}</Text>
-            </NativeTouchControl>
-          </Pressable>
-        ))}
+        {NAV_BUTTONS.map((label) => {
+          // These nav buttons sit in the top area that iOS 26 treats as the
+          // scroll-to-top tap zone. NativeTouchControl (a native UIControl)
+          // claims the touch so pressing them does not scroll the list to top.
+          if (label === 'Right') {
+            // Overlay-sibling usage (see README): NativeTouchControl is not a
+            // wrapper here. It absolutely fills the whole Pressable — including
+            // the Pressable's padding — so the entire button opts out of
+            // scroll-to-top, even the parts the label does not cover. It comes
+            // after the label so it stays the topmost view.
+            return (
+              <Pressable
+                key={label}
+                style={({ pressed }) => [
+                  styles.navButton,
+                  styles.navButtonTouchControl,
+                  pressed && styles.navButtonPressed,
+                ]}
+                onPress={() => setMessage(`${label} button pressed`)}
+              >
+                <Text style={styles.navButtonText}>{label}</Text>
+                <NativeTouchControl style={StyleSheet.absoluteFill} />
+              </Pressable>
+            );
+          }
+
+          // Wrapper usage: the label lives inside the NativeTouchControl, which
+          // spans the button.
+          return (
+            <Pressable
+              key={label}
+              style={({ pressed }) => [
+                styles.navButton,
+                pressed && styles.navButtonPressed,
+              ]}
+              onPress={() => setMessage(`${label} button pressed`)}
+            >
+              <NativeTouchControl style={styles.navButtonTouchControl}>
+                <Text style={styles.navButtonText}>{label}</Text>
+              </NativeTouchControl>
+            </Pressable>
+          );
+        })}
       </View>
 
       <FlatList

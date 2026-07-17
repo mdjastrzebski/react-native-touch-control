@@ -64,6 +64,38 @@ function TopBarButton({ label, onPress }) {
 
 `NativeTouchControl` accepts all standard `View` props, so you can lay it out and style it like any other view. Children render inside it.
 
+### `NativeTouchControl` must live _inside_ your `Pressable`
+
+iOS suppresses scroll-to-top only when the tapped view is the native `UIControl`, and React Native routes that tap **up** the tree to the responder. So the `Pressable`/`Touchable` must be an **ancestor** of `NativeTouchControl` — nest the control inside it, never around it. A `Pressable` placed inside `NativeTouchControl` never fires `onPress`.
+
+```tsx
+// ✅ Works — Pressable is an ancestor of NativeTouchControl
+<Pressable onPress={onPress}>
+  <NativeTouchControl>
+    <Text>{label}</Text>
+  </NativeTouchControl>
+</Pressable>
+
+// ❌ Never fires onPress — Pressable is a descendant
+<NativeTouchControl>
+  <Pressable onPress={onPress}>
+    <Text>{label}</Text>
+  </Pressable>
+</NativeTouchControl>
+```
+
+### Covering padding: use it as an overlay sibling
+
+If your `Pressable` adds padding _around_ the control, taps on that padding still slip through to scroll-to-top. To cover the whole pressable, render `NativeTouchControl` as a `StyleSheet.absoluteFill` **sibling** of your content instead of a wrapper — placed **last** so it stays the topmost view:
+
+```tsx
+<Pressable style={styles.button} onPress={onPress}>
+  <Text style={styles.label}>{label}</Text>
+  {/* Overlay, not wrapper: fills the whole Pressable, padding included. */}
+  <NativeTouchControl style={StyleSheet.absoluteFill} />
+</Pressable>
+```
+
 ## How it works
 
 React Native and native iOS run two independent touch dispatch systems. RN's responder system handles touches for `Pressable`, `Touchable*`, and gesture handlers in JavaScript, while UIKit dispatches touches to native views in parallel. The two do not coordinate: UIKit has no knowledge of your RN `Pressable`s or `Touchable`s, so a JS component handling a press does nothing to stop UIKit from also acting on the same tap. That is why an ordinary `Pressable` in the nav bar still triggers scroll-to-top — from UIKit's point of view there was no native control there, only a tap in the scroll-to-top zone.
