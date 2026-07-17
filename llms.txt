@@ -1,0 +1,33 @@
+# react-native-touch-control
+
+> A React Native (New Architecture / Fabric) view backed by a real native iOS `UIControl`. Its mere presence in the view hierarchy makes iOS treat the region as an interactive control, so system behaviors that defer to controls skip over it. The motivating case is scroll-to-top: on iOS 26 the status-bar tap zone expanded to cover much of the navigation bar, so taps meant for nav-bar buttons trigger an unwanted scroll-to-top; wrapping those buttons in `NativeTouchControl` opts the region out.
+
+Key facts for using the library correctly:
+
+- **iOS-only behavior.** On Android `NativeTouchControl` is a no-op passthrough that just renders its children, so it is safe to use in cross-platform code without branching.
+- **The component takes all standard `View` props** (`NativeTouchControl(props: ViewProps)`); children render inside it. The native component is codegen'd as `TouchControl`.
+- **Placement rule:** the `Pressable`/`Touchable` must be an **ancestor** of `NativeTouchControl` (nest the control *inside* the pressable, never around it). iOS suppresses scroll-to-top only when the tapped view resolves to the `UIControl`, and React Native then routes the tap *up* the tree to the responder — so a `Pressable` nested *inside* `NativeTouchControl` never fires `onPress`.
+- **Covering padding:** if a `Pressable` adds padding around the control, taps on the padding still leak through. Render `NativeTouchControl` as a `StyleSheet.absoluteFill` sibling of the content (placed **last**, so it stays the topmost view) instead of as a wrapper.
+- **How it works:** the native view is a passive `UIControl` marker with no target/action. It is stretched to the view's full bounds (padding included) and stays topmost, so it is the hit-test leaf iOS's heuristic checks. React children mount beneath it and show through its transparent regions.
+
+## Docs
+
+- [README](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/README.md): install, usage, placement/overlay patterns, "How it works", and platform support.
+- [Contributing](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/CONTRIBUTING.md): development workflow and how to send a pull request.
+
+## Source
+
+- [src/index.tsx](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/src/index.tsx): public entry point; re-exports `NativeTouchControl`.
+- [src/NativeTouchControl.tsx](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/src/NativeTouchControl.tsx): Android/default implementation — a plain `View` passthrough.
+- [src/NativeTouchControl.native.tsx](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/src/NativeTouchControl.native.tsx): iOS implementation — re-exports the codegen'd native component.
+- [src/TouchControlNativeComponent.ts](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/src/TouchControlNativeComponent.ts): Fabric codegen spec (`NativeProps extends ViewProps`, component name `TouchControl`).
+- [ios/TouchControlNativeComponent.mm](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/ios/TouchControlNativeComponent.mm): native iOS implementation — the passive `UIControl` marker kept at full bounds and topmost.
+
+## Example
+
+- [example/src/App.tsx](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/example/src/App.tsx): runnable demo with a nav bar in the scroll-to-top zone, showing both the wrapper form and the `absoluteFill` overlay-sibling form.
+
+## Optional
+
+- [Usage snippet](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/README.md#usage): minimal `TopBarButton` example.
+- [package.json](https://github.com/mdjastrzebski/react-native-touch-control/blob/main/package.json): package name `react-native-touch-control`, MIT licensed, requires the New Architecture (Fabric).
