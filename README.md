@@ -43,7 +43,25 @@ This library uses the New Architecture (Fabric). No extra linking steps are requ
 
 `NativeTouchControl` accepts all standard `View` props and lays out like any other view. There are two equally valid ways to use it. Both place the native `UIControl` **on top of your content**, which is the condition iOS's scroll-to-top detection checks (see [How it works](#how-it-works)).
 
-### Use case 1: as a wrapper
+### Use case 1: as an overlay sibling
+
+Render `NativeTouchControl` as a `StyleSheet.absoluteFill` **sibling** of the content, placed **last** so it stays topmost. This covers the whole parent, including any padding a wrapper would leave exposed. It has no children, so render it only on iOS:
+
+```tsx
+import { Platform, StyleSheet } from 'react-native';
+
+<Pressable style={styles.button} onPress={onPress}>
+  <Text style={styles.label}>{label}</Text>
+  {/* Fills the whole Pressable, padding included. */}
+  {Platform.OS === 'ios' && (
+    <NativeTouchControl style={StyleSheet.absoluteFill} />
+  )}
+</Pressable>;
+```
+
+Use this form when the tappable area is larger than the content itself (padding, hit slop, a whole card).
+
+### Use case 2: as a wrapper
 
 Nest content inside `NativeTouchControl`. The control spans the region, and its children render beneath it:
 
@@ -63,24 +81,6 @@ function TopBarButton({ label, onPress }) {
 ```
 
 Use this form when the control should cover exactly the content.
-
-### Use case 2: as an overlay sibling
-
-Render `NativeTouchControl` as a `StyleSheet.absoluteFill` **sibling** of the content, placed **last** so it stays topmost. This covers the whole parent, including any padding a wrapper would leave exposed. It has no children, so render it only on iOS:
-
-```tsx
-import { Platform, StyleSheet } from 'react-native';
-
-<Pressable style={styles.button} onPress={onPress}>
-  <Text style={styles.label}>{label}</Text>
-  {/* Fills the whole Pressable, padding included. */}
-  {Platform.OS === 'ios' && (
-    <NativeTouchControl style={StyleSheet.absoluteFill} />
-  )}
-</Pressable>;
-```
-
-Use this form when the tappable area is larger than the content itself (padding, hit slop, a whole card).
 
 ### `NativeTouchControl` must be _inside_ the `Pressable`
 
